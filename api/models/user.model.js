@@ -1,19 +1,20 @@
+import { Timestamp } from "bson";
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema(
   {
     username: {
-      type: string,
+      type: String,
       require: true,
       unique: true,
     },
     email: {
-      type: string,
+      type: String,
       require: true,
       unique: true,
     },
     password: {
-      type: string,
+      type: String,
       require: true,
     },
   },

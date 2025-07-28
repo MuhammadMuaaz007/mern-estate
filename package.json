@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon api/index.js",
     "start": "node api/index.js"
@@ -10,8 +11,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.1",
     "espress": "^0.0.0",
     "express": "^5.1.0",
