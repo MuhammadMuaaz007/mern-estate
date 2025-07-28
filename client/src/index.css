@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+body{
+  background-color: rgb(241, 245, 241);
+}
+input{
+  outline: none;
+  border: none;
+}
