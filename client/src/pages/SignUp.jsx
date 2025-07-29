@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 const SignUp = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -64,14 +66,21 @@ const SignUp = () => {
           name="email"
           onChange={handleChange}
         />
-        <input
-          type="password"
-          placeholder="Password"
-          className=" rounded-lg p-3 bg-white"
-          id="password"
-          name="password"
-          onChange={handleChange}
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="w-full rounded-lg p-3 bg-white"
+            id="password"
+            name="password"
+            onChange={handleChange}
+          />
+          <FontAwesomeIcon
+            icon={showPassword ? faEye : faEyeSlash}
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600"
+          />
+        </div>
         <button
           disabled={loading}
           type="submit"
