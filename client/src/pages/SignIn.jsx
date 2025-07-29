@@ -57,10 +57,9 @@ const SignIn = () => {
           id="email"
           name="email"
           onChange={handleChange}
-          
         />
         <input
-            type={showPassword ? "text" : "password"}
+          type={showPassword ? "text" : "password"}
           placeholder="Password"
           className=" rounded-lg p-3 bg-white"
           id="password"
