@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import Header from "./Components/Header";
 import PrivateRoute from "./Components/PrivateRoute";
 function App() {
+
   return (
     <BrowserRouter>
       <Header />

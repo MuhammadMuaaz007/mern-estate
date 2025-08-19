@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 const Header = () => {
   const { currentUser } = useSelector((state) => state.user);
+ 
   return (
     <header className="bg-slate-200 shadow-md ">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
@@ -36,10 +37,13 @@ const Header = () => {
             {currentUser ? (
               <img
                 src={
-                  currentUser.avatar ||
-                  "https://www.shutterstock.com/shutterstock/photos/1760295569/display_1500/stock-vector-profile-picture-avatar-icon-vector-1760295569.jpg"
+                  currentUser?.avatar
+                    ? currentUser.avatar.startsWith("/uploads")
+                      ? `http://localhost:5000${currentUser.avatar}`
+                      : currentUser.avatar
+                    : "https://www.shutterstock.com/shutterstock/photos/1760295569/display_1500/stock-vector-profile-picture-avatar-icon-vector-1760295569.jpg"
                 }
-                alt={currentUser.username}
+                alt={currentUser?.username}
                 className="rounded-full h-7 w-7 object-cover"
               />
             ) : (
