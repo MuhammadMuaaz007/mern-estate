@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   updateUserSuccess,
@@ -150,12 +150,13 @@ const Profile = () => {
         <button className="bg-slate-700 text-white uppercase rounded-lg p-3 hover:opacity-90 disabled:opacity-80">
           update
         </button>
-        <button
+        <Link
+          to={"/create-listing"}
           type="text"
-          className="bg-green-700 text-white uppercase rounded-lg p-3 hover:opacity-90 disabled:opacity-80"
+          className="bg-green-700 text-white uppercase rounded-lg p-3 hover:opacity-90 disabled:opacity-80 text-center"
         >
           Create listing
-        </button>
+        </Link>
       </form>
       <div className="flex justify-between mt-5">
         <span className="text-red-700 cursor-pointer" onClick={handleDelete}>
@@ -165,6 +166,7 @@ const Profile = () => {
           Sign out
         </span>
       </div>
+
       <div className="text-center mt-5">
         <span className="text-green-700 cursor-pointer">Show listing</span>
       </div>
