@@ -3,8 +3,11 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.route.js";
 import authRouter from "./routes/auth.route.js";
+import listingRouter from "./routes/listing.route.js";
 import cors from "cors";
 import path from "path";
+import cookieParser from "cookie-parser";
+
 
 dotenv.config();
 
@@ -14,19 +17,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(process.cwd(), "api", "uploads")));
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
+app.use(cookieParser());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend's URL
+    origin: "http://localhost:5173", 
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
 mongoose
-  .connect(process.env.MONGO, {
-   
-  })
+  .connect(process.env.MONGO, {})
   .then(() => {
     console.log("MongoDB connected successfully");
   })
@@ -40,6 +42,7 @@ app.listen(PORT, () => {
 
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/listing", listingRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
