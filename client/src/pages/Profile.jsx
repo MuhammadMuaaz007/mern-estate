@@ -19,7 +19,6 @@ const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const fileRef = useRef(null);
   const { currentUser } = useSelector((state) => state.user);
-
   const [username, setUsername] = useState(currentUser.username);
   const [email, setEmail] = useState(currentUser.email);
   const [password, setPassword] = useState("");
@@ -42,6 +41,7 @@ const Profile = () => {
     formData.append("email", email);
     if (password) formData.append("password", password);
     if (avatarFile) formData.append("avatar", avatarFile);
+
     try {
       dispatch(updateUserStart());
       const res = await axios.put(

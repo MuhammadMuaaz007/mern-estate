@@ -8,7 +8,6 @@ import {
   update,
   signout,
   deleteUser,
-
 } from "../controller/auth.controller.js";
 import { fileURLToPath } from "url";
 const router = express.Router();

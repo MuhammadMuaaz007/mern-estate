@@ -50,7 +50,6 @@ export const signin = async (req, res, next) => {
   }
 };
 
-
 export const google = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -91,8 +90,6 @@ export const update = async (req, res, next) => {
   try {
     const { email, password, username } = req.body;
     const { id } = req.params;
-    console.log("req.body:", req.body);
-    console.log("req.file:", req.file);
     let updateData = { username, email };
     if (password) {
       updateData.password = bcryptjs.hashSync(password, 10);
@@ -125,7 +122,6 @@ export const signout = async (req, res, next) => {
     next(error);
   }
 };
-
 // userController.js
 export const deleteUser = async (req, res, next) => {
   try {
