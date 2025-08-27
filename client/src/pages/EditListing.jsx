@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-const CreateListing = () => {
+import { useParams } from "react-router-dom";
+const EditListing = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
@@ -24,19 +24,34 @@ const CreateListing = () => {
     parking: false,
     furnished: false,
   });
-  const navigate = useNavigate();
+  const params = useParams();
+
+  useEffect(() => {
+    const fetchListing = async () => {
+      const listingId = params.listingId;
+      const res = await axios.get(
+        `http://localhost:5000/api/listing/get/${listingId}`
+      );
+      setformData(res.data);
+      setUploadedFiles(res.data.imageUrls || []);
+      if (res.success === false) {
+        console.log(res.message);
+        return;
+      }
+    };
+    fetchListing();
+  }, [params.listingId]);
+  // const navigate = useNavigate();
   const inputRef = useRef(null);
-  console.log(formData);
+
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    console.log(selectedFiles);
     if (selectedFiles.length > 6) {
       setError("You can upload a maximum of 6 images.");
       setFiles([]);
       inputRef.current.value = ""; // reset input
       return;
     }
-
     const validTypes = ["image/jpeg", "image/png"];
     const invalidFiles = selectedFiles.filter(
       (file) => !validTypes.includes(file.type)
@@ -52,26 +67,50 @@ const CreateListing = () => {
     setError("");
     setFiles(selectedFiles);
   };
+
   const handleDelete = (index) => {
     const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
-    console.log(updatedFiles);
     setUploadedFiles(updatedFiles);
     if (inputRef.current) {
       inputRef.current.value = "";
     }
-    console.log(updatedFiles);
   };
-  const handleUpload = () => {
+
+  const handleUpload = async () => {
     if (files.length === 0) {
       setError("Please select images before uploading.");
       return;
     }
     setUpload(true);
-    setTimeout(() => {
-      setUploadedFiles(files);
+
+    try {
+      const formDataObj = new FormData();
+      files.forEach((file) => formDataObj.append("images", file));
+
+      // Upload files to backend
+      const uploadRes = await axios.post(`/api/listing/upload`, formDataObj, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const uploadedUrls = uploadRes.data.urls; // ✅ backend returns array of URLs
+
+      // ✅ Store only URLs in state
+      setUploadedFiles((prev) => [...prev, ...uploadedUrls]);
+      setformData((fd) => ({
+        ...fd,
+        imageUrls: [...fd.imageUrls, ...uploadedUrls],
+      }));
+
+      setFiles([]); // clear local files after upload
+      inputRef.current.value = ""; // reset file input
+    } catch (err) {
+      setError("Upload failed. Try again.");
+      console.log(err);
+    } finally {
       setUpload(false);
-    }, 1000);
+    }
   };
+
   const handleChange = (e) => {
     if (e.target.id === "sale" || e.target.id === "rent") {
       setformData({ ...formData, type: e.target.id });
@@ -94,6 +133,7 @@ const CreateListing = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (
       formData.name === "" &&
       formData.address === "" &&
@@ -102,43 +142,67 @@ const CreateListing = () => {
       setSubmitError(
         "❌ Can not create listing, all the fields must be filled!"
       );
-    } else if (+formData.regularPrice < +formData.discountPrice) {
+      return;
+    }
+
+    if (+formData.regularPrice < +formData.discountPrice) {
       setSubmitError("❌ Discount price must be lower than Regular price.");
-    } else if (files.length === 0) {
+      return;
+    }
+
+    if (uploadedFiles.length === 0 && files.length === 0) {
       setSubmitError("❌ You must upload at least one image.");
-    } else {
-      try {
-        setLoading(true);
-        setSubmitError(false);
+      return;
+    }
 
-        // STEP 1: Create listing without images
-        const res = await axios.post("/api/listing/create", {
-          ...formData,
-          userRef: currentUser._id,
-        });
+    try {
+      setLoading(true);
+      setSubmitError(false);
 
-        const listingId = res.data._id;
+      // STEP 1: Upload new images
+      let newUrls = [];
+      if (files.length > 0) {
         const formDataObj = new FormData();
         files.forEach((file) => formDataObj.append("images", file));
-        formDataObj.append("listingId", listingId);
 
         const uploadRes = await axios.post(`/api/listing/upload`, formDataObj, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        console.log(uploadRes);
-        setLoading(false);
-        alert("Listing Created");
-        navigate("/profile");
-      } catch (error) {
-        setSubmitError(error.message);
-        setLoading(false);
+
+        newUrls = uploadRes.data.urls; // ✅ backend returns array of URLs
       }
+
+      // STEP 2: Final list of image URLs
+      const finalImageUrls = [...uploadedFiles, ...newUrls];
+
+      // STEP 3: Update listing in DB
+      const res = await axios.put(
+        `http://localhost:5000/api/listing/update/${params.listingId}`,
+        {
+          ...formData,
+          imageUrls: finalImageUrls, // ✅ only URLs now
+          userRef: currentUser._id,
+        },
+        { withCredentials: true }
+      );
+
+      console.log("Updated:", res.data);
+
+      // STEP 4: Update local state
+      setUploadedFiles(finalImageUrls);
+      setFiles([]);
+      setLoading(false);
+      alert("Listing updated successfully ✅");
+      // navigate(`/listing/${params.listingId}`);
+    } catch (error) {
+      setSubmitError(error.message);
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-3 max-w-4xl mx-auto">
-      <h1 className="text-3xl my-7 font-bold text-center">Create a Listing</h1>
+      <h1 className="text-3xl my-7 font-bold text-center">Update a Listing</h1>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col sm:flex-row align-center"
@@ -318,18 +382,17 @@ const CreateListing = () => {
           </div>
           <div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <div className="flex flex-wrap  gap-3 mt-2  justify-center">
-              {uploadedFiles.map((file, idx) => (
+            <div className="flex flex-wrap gap-3 mt-2 justify-center">
+              {uploadedFiles.map((url, idx) => (
                 <div
                   key={idx}
                   className="relative w-22 h-22 border rounded-lg overflow-hidden"
                 >
                   <img
-                    src={URL.createObjectURL(file)}
+                    src={`http://localhost:5000${url}`}
                     alt="preview"
                     className="w-22 h-22 object-cover"
                   />
-                  {/* delete button */}
                   <button
                     type="button"
                     onClick={() => handleDelete(idx)}
@@ -340,6 +403,7 @@ const CreateListing = () => {
                 </div>
               ))}
             </div>
+
             <button
               disabled={loading || upload}
               type="submit"
@@ -347,7 +411,7 @@ const CreateListing = () => {
                 uploadedFiles.length > 0 ? "mt-4" : ""
               }`}
             >
-              {loading ? "Creating..." : "Create Listing"}
+              {loading ? "Updating..." : "Update Listing"}
             </button>
             {submitError && (
               <p className="text-red-500 text-sm mt-2 ml-2.5 justify-center">
@@ -361,4 +425,4 @@ const CreateListing = () => {
   );
 };
 
-export default CreateListing;
+export default EditListing;

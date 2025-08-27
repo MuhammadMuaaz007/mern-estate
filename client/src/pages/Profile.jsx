@@ -24,6 +24,8 @@ const Profile = () => {
   const [password, setPassword] = useState("");
   const [avatarFile, setAvatarFile] = useState(null); // store selected file
   const [previewImage, setPreviewImage] = useState(currentUser.avatar);
+  const [showListingsError, setshowListingsError] = useState(false);
+  const [userListings, setUserListings] = useState([]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -88,6 +90,32 @@ const Profile = () => {
     }
   };
 
+  const handleShowListings = async () => {
+    try {
+      const res = await axios.get(`/api/user/listing/${currentUser._id}`);
+      if (res.success === false) {
+        setshowListingsError(true);
+        return;
+      }
+      setUserListings(res.data);
+    } catch (error) {
+      console.log("Create Listings first", error);
+    }
+  };
+  const deleteListing = async (listingId) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/user/listing/delete/${listingId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setUserListings((prev) => prev.filter((l) => l._id !== listingId));
+      navigate("/profile");
+    } catch (error) {
+      console.error("Error deleting the Listing:", error);
+    }
+  };
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl text-center my-7 font-semibold">Profile</h1>
@@ -168,10 +196,53 @@ const Profile = () => {
       </div>
 
       <div className="text-center mt-5">
-        <span className="text-green-700 cursor-pointer">Show listing</span>
+        <button
+          className="text-green-700 cursor-pointer"
+          onClick={handleShowListings}
+        >
+          Show listing
+        </button>
+        <p className="text-red-700 cursor-pointer">
+          {showListingsError ? "Error in showing Listing" : ""}
+        </p>
+        {userListings && userListings.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {userListings.map((listing) => (
+              <div
+                key={listing._id}
+                className="p-3 border rounded flex justify-between"
+              >
+                <div className="flex gap-2 justify-center">
+                  <img
+                    src={`http://localhost:5000${listing.imageUrls[0]}`}
+                    className="w-18 h-18 rounded-sm"
+                  />
+                  <h3 className="font-semibold hover:underline text-[16px] my-auto">
+                    {listing.name}
+                  </h3>
+                </div>
+                <div className="flex flex-col gap-1 justify-center">
+                  <button
+                    className="bg-red-500 cursor-pointer uppercase p-1 rounded-sm text-white px-4 hover:opacity-90 disabled:opacity-80"
+                    onClick={() => deleteListing(listing._id)}
+                  >
+                    Delete
+                  </button>
+                  <Link to={`/edit-listing/${listing._id}`}>
+                    <button className="bg-green-700 cursor-pointer uppercase p-1 rounded-sm text-white px-4 hover:opacity-90 disabled:opacity-80">
+                      Edit
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default Profile;
+
+//../../../api/uploads/listingImages/1755949332944-download (1).png

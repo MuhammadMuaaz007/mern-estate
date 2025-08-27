@@ -1,10 +1,14 @@
 import express from "express";
-import {test} from "../controller/user.controller.js";
+import {
+  getUserListings,
+  deleteListing,
+} from "../controller/user.controller.js";
+import { verifyToken } from "../utils/verifyUser.js";
 
 const router = express.Router();
 
+router.get("/:id", verifyToken, getUserListings);
+router.delete("/delete/:id", verifyToken, deleteListing);
 
-
-router.get("/test", test);
 
 export default router;
