@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 const EditListing = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [files, setFiles] = useState([]);
@@ -43,7 +43,7 @@ const EditListing = () => {
   }, [params.listingId]);
   // const navigate = useNavigate();
   const inputRef = useRef(null);
-
+  const navigate=useNavigate();
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (selectedFiles.length > 6) {
@@ -193,7 +193,7 @@ const EditListing = () => {
       setFiles([]);
       setLoading(false);
       alert("Listing updated successfully ✅");
-      // navigate(`/listing/${params.listingId}`);
+      navigate(`/listing/${params.listingId}`);
     } catch (error) {
       setSubmitError(error.message);
       setLoading(false);
