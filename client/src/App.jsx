@@ -9,8 +9,8 @@ import Header from "./Components/Header";
 import PrivateRoute from "./Components/PrivateRoute";
 import EditListing from "./pages/EditListing";
 import Listing from "./pages/Listing";
+import Search from "./pages/Search";
 function App() {
-
   return (
     <BrowserRouter>
       <Header />
@@ -19,12 +19,13 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/search" element={<Search />} />
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
-           <Route path="/create-listing" element={<CreateListing/>} />
-            <Route path="/edit-listing/:listingId" element={<EditListing/>} />
+          <Route path="/create-listing" element={<CreateListing />} />
+          <Route path="/edit-listing/:listingId" element={<EditListing />} />
         </Route>
-        <Route path="/listing/:listingId" element={<Listing/>}/>
+        <Route path="/listing/:listingId" element={<Listing />} />
       </Routes>
     </BrowserRouter>
   );
