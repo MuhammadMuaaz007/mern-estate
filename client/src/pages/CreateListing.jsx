@@ -125,9 +125,19 @@ const CreateListing = () => {
         const uploadRes = await axios.post(`/api/listing/upload`, formDataObj, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        console.log(uploadRes);
+
+        // ✅ Get uploaded URLs
+        const uploadedUrls = uploadRes.data.urls;
+
+        // ✅ Update listing with uploaded image URLs
+        await axios.put(`/api/listing/update/${listingId}`, {
+          ...formData,
+          imageUrls: uploadedUrls,
+          userRef: currentUser._id,
+        });
+
         setLoading(false);
-        alert("Listing Created");
+        alert("Listing Created ✅");
         navigate("/profile");
       } catch (error) {
         setSubmitError(error.message);
