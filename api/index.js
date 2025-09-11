@@ -17,6 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(process.cwd(), "api", "uploads")));
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
+
+const __dirname=path.resolve()
+
 app.use(cookieParser());
 app.use(
   cors({
@@ -42,6 +45,11 @@ app.listen(PORT, () => {
 app.use("/api/user/listing", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/listing", listingRouter);
+
+app.use(express.static(path.join(__dirname,'/client/dist')));
+app.get('*',(req,res)=>{
+  res.sendFile(path.join(__dirname,'client','dist','index.html'));
+})
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
