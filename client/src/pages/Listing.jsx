@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useSelector } from "react-redux";
-import { Navigation } from "swiper/modules";
+import { Navigation } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import {
@@ -39,10 +39,10 @@ function Listing() {
           setError(true);
           return;
         }
-        console.log("API response:", res.data);
+  
         setListing(res.data);
         setError(false);
-        console.log(listing);
+
       } catch (error) {
         console.log(error);
         setError(true);
@@ -52,11 +52,11 @@ function Listing() {
     };
     fetchListing();
   }, [params.listingId]);
-  useEffect(() => {
-    if (listing) {
-      console.log("Updated listing:", listing);
-    }
-  }, [listing]);
+  // useEffect(() => {
+  //   if (listing) {
+  //     console.log("Updated listing:", listing);
+  //   }
+  // }, [listing]);
 
   return (
     <div>

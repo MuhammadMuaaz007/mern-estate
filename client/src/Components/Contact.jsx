@@ -12,7 +12,6 @@ const Contact = ({ listing }) => {
           `http://localhost:5000/api/user/listing/get/${listing.userRef}`
         );
         setLandlord(res.data);
-        console.log(res.data);
       } catch (error) {
         console.log(error);
       }
