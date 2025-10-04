@@ -245,4 +245,3 @@ const Profile = () => {
 
 export default Profile;
 
-//../../../api/uploads/listingImages/1755949332944-download (1).png
